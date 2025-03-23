@@ -1,5 +1,5 @@
-# Meu RH360 
-## Um sistema completo para gestão de recursos humanos
+#  Meu gerenciamento de tarefas
+## Uma Aplicação Completa do Zero. Backend (Node.js + Express + Banco de Dados) + Frontend (react vite tailwinds)
 
 ![Coverage](https://img.shields.io/badge/coverage-70%25-brightgreen)
 
