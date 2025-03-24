@@ -19,11 +19,16 @@ app.post('/tasks', async (req, res) => {
   }
 });
 
-// task list
+// list task
 app.get('/tasks', async (req, res) => {
   try {
-    const task = await Tasks.findAll();
-    res.json(task);
+    const tasks = await Tasks.findAll();
+    const formattedTasks = tasks.map(task => ({
+      ...task.toJSON(),
+      createdAt: new Date(task.createdAt).toLocaleString(),
+      updatedAt: new Date(task.updatedAt).toLocaleString() 
+    }));
+    res.json(formattedTasks);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -52,7 +57,7 @@ app.delete('/tasks/:id', async (req, res) => {
 // task done
 app.patch('/tasks/:id/done', async (req, res) => {
   try {
-    await Tasks.update({ concluida: true }, { where: { id: req.params.id } });
+    await Tasks.update({ done: true }, { where: { id: req.params.id } });
     res.json({ message: 'Tarefa marcada como concluída' });
   } catch (error) {
     res.status(500).json({ error: error.message });
