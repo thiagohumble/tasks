@@ -4,8 +4,8 @@
 ![Coverage](https://img.shields.io/badge/coverage-70%25-brightgreen)
 
 ### Badges
-![image](![image](https://github.com/user-attachments/assets/8c87f468-8658-4b9c-ae86-28a1da3a78ad)
-)
+![image](https://github.com/user-attachments/assets/a458cbde-fb59-4dd9-ba47-d65a277ad66f)
+
 
 ### Índice
 * **Descrição**
