@@ -1,27 +1,33 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-function TaskForm() {
-	const [title, setTitle] = useState('');
-	const [description, setDescription] = useState('');
+function TaskForm({ onTaskCreated }) { // Adicionado prop onTaskCreated
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [done, setDone] = useState(false);
 
-	const handleSubmit = (event) => {
-		event.preventDefault();
-		axios.post('http://127.0.0.1:3001/tasks', { titulo: title, descricao: description })
-		.then(() => {
-			setTitle('');
-			setDescription('');
-		})
-		.catch(error => console.error(error));
-	};
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        axios.post('http://127.0.0.1:3001/tasks', { title, description, done })
+            .then(response => {
+                setDone(false);
+                setTitle('');
+                setDescription('');
+                if (onTaskCreated) {
+                    onTaskCreated(response.data); // Chama a função para atualizar a lista
+                }
+            })
+            .catch(error => console.error(error));
+    };
 
-	return (
-		<form onSubmit={handleSubmit}>
-		<input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
-		<textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
-		<button type="submit">Create Task</button>
-		</form>
-		);
+    return (
+        <form onSubmit={handleSubmit}>
+            <input type="checkbox" checked={done} onChange={(e) => setDone(e.target.checked)} />
+            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título" />
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Descrição" />
+            <button type="submit">Criar tarefa</button>
+        </form>
+    );
 }
 
 export default TaskForm;
