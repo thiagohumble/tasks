@@ -50,7 +50,7 @@ app.delete('/tasks/:id', async (req, res) => {
 });
 
 // task done
-app.patch('/tasks/:id/concluida', async (req, res) => {
+app.patch('/tasks/:id/done', async (req, res) => {
   try {
     await Tasks.update({ concluida: true }, { where: { id: req.params.id } });
     res.json({ message: 'Tarefa marcada como concluída' });
@@ -62,3 +62,4 @@ app.patch('/tasks/:id/concluida', async (req, res) => {
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });
+

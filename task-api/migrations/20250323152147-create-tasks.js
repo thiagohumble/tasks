@@ -9,13 +9,13 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      titulo: {
+      title: {
         type: Sequelize.STRING
       },
-      descricao: {
+      description: {
         type: Sequelize.TEXT
       },
-      concluida: {
+      done: {
         type: Sequelize.BOOLEAN
       },
       createdAt: {
