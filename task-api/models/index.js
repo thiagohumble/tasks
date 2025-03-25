@@ -8,9 +8,10 @@ const basename = path.basename(__filename);
 const db = {};
 
 let sequelize;
-if (process.env.DATABASE_URL) {
-  console.log("veja DATABASE_URL:", process.env.DATABASE_URL);
-  sequelize = new Sequelize(process.env.DATABASE_URL, {
+if (process.env.PG_DATABASE && process.env.PG_USER && process.env.PG_PASSWORD && process.env.PG_HOST && process.env.PG_PORT) {
+  const connectionString = `postgres://<span class="math-inline">\{process\.env\.PG\_USER\}\:</span>{process.env.PG_PASSWORD}@<span class="math-inline">\{process\.env\.PG\_HOST\}\:</span>{process.env.PG_PORT}/${process.env.PG_DATABASE}`;
+  console.log("Connection String:", connectionString);
+  sequelize = new Sequelize(connectionString, {
     dialect: 'postgres',
     dialectOptions: {
       ssl: {
@@ -20,7 +21,7 @@ if (process.env.DATABASE_URL) {
     }
   });
 } else {
-  console.error("Error: DATABASE_URL environment variable is not defined.");
+  console.error("Error: Required PostgreSQL environment variables are not defined.");
 }
 
 fs
