@@ -1,5 +1,7 @@
 require('dotenv').config(); // Load environment variables from .env file
 
+console.log("config.js is being executed!");
+
 module.exports = {
   dialect: 'postgres',
   host: process.env.PG_HOST,
