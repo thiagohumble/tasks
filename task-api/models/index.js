@@ -9,22 +9,22 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env]; 
 const db = {};
 
+
 let sequelize;
 if (process.env.DATABASE_URL) {
-  sequelize = new Sequelize(process.env.DATABASE_URL, {
-    dialect: 'postgres',
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false
-      }
-    }
-  });
+  // ...
 } else {
-  if (config && config.database) { 
-    sequelize = new Sequelize(config.database, config.username, config.password, config);
-  } else {
-    console.error("Error: config.json or database property not found in local configuration.");
+  try {
+    console.log("__dirname:", __dirname); 
+    const config = require(__dirname + '/../config/config.json')[env];
+    console.log("Config (Local):", config); 
+    if (config && config.database) {
+      sequelize = new Sequelize(config.database, config.username, config.password, config);
+    } else {
+      console.error("Error: config.json or database property not found in local configuration.");
+    }
+  } catch (error) {
+    console.error("Error loading config.json:", error);
   }
 }
 
@@ -53,3 +53,4 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 module.exports = db;
+
