@@ -6,7 +6,7 @@ const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
+// const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
 let sequelize;
@@ -21,14 +21,12 @@ if (process.env.DATABASE_URL) {
     }
   });
 } else {
-  // Configuração local
-  const config = require(__dirname + '/../config/config.json')[env];
-  if (config && config.database) {
-    sequelize = new Sequelize(config.database, config.username, config.password, config);
-  } else {
+  // if (config && config.database) {
+  //   sequelize = new Sequelize(config.database, config.username, config.password, config);
+  // } else {
     console.error("Error: config.json or database property not found in local configuration.");
-    process.exit(1);
-  }
+  //   process.exit(1);
+  // }
 }
 
 fs
