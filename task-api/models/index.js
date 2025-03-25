@@ -9,7 +9,7 @@ const db = {};
 
 let sequelize;
 if (process.env.PG_DATABASE && process.env.PG_USER && process.env.PG_PASSWORD && process.env.PG_HOST && process.env.PG_PORT) {
-  const connectionString = `postgres://<span class="math-inline">\{process\.env\.PG\_USER\}\:</span>{process.env.PG_PASSWORD}@<span class="math-inline">\{process\.env\.PG\_HOST\}\:</span>{process.env.PG_PORT}/${process.env.PG_DATABASE}`;
+  const connectionString = 'postgres://' + process.env.PG_USER + ':' + process.env.PG_PASSWORD + '@' + process.env.PG_HOST + ':' + process.env.PG_PORT + '/' + process.env.PG_DATABASE;
   console.log("Connection String:", connectionString);
   sequelize = new Sequelize(connectionString, {
     dialect: 'postgres',
