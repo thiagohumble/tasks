@@ -65,6 +65,6 @@ app.patch('/tasks/:id/done', async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Servidor rodando na porta ${port}`);
+  console.log(`Servidor rodando na porta ${port} http://127.0.0.1:3001/tasks`);
 });
 

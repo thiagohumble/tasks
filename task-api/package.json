@@ -17,5 +17,8 @@
     "pg": "^8.14.1",
     "sequelize": "^6.37.6",
     "sequelize-cli": "^6.6.2"
+  },
+  "scripts": {
+    "migrate": "npx sequelize-cli db:migrate"
   }
 }
