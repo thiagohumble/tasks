@@ -20,29 +20,6 @@ if (process.env.PG_DATABASE && process.env.PG_USER && process.env.PG_PASSWORD &&
       }
     }
   });
-
-  // Importar os modelos aqui, após a inicialização do Sequelize
-  fs
-    .readdirSync(__dirname)
-    .filter(file => {
-      return (
-        file.indexOf('.') !== 0 &&
-        file !== basename &&
-        file.slice(-3) === '.js' &&
-        file.indexOf('.test.js') === -1
-      );
-    })
-    .forEach(file => {
-      const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-      db[model.name] = model;
-    });
-
-  Object.keys(db).forEach(modelName => {
-    if (db[modelName].associate) {
-      db[modelName].associate(db);
-    }
-  });
-
 } else {
   console.error("Error: Required PostgreSQL environment variables are not defined.");
   try {
@@ -51,29 +28,6 @@ if (process.env.PG_DATABASE && process.env.PG_USER && process.env.PG_PASSWORD &&
     if (config && config.database) {
       sequelize = new Sequelize(config.database, config.username, config.password, config);
       console.log("Connection String (config.json):", config.database);
-
-      // Importar os modelos aqui, após a inicialização do Sequelize
-      fs
-        .readdirSync(__dirname)
-        .filter(file => {
-          return (
-            file.indexOf('.') !== 0 &&
-            file !== basename &&
-            file.slice(-3) === '.js' &&
-            file.indexOf('.test.js') === -1
-          );
-        })
-        .forEach(file => {
-          const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-          db[model.name] = model;
-        });
-
-      Object.keys(db).forEach(modelName => {
-        if (db[modelName].associate) {
-          db[modelName].associate(db);
-        }
-      });
-
     } else {
       console.error("Error: config.json or database property not found in local configuration.");
     }
@@ -81,6 +35,27 @@ if (process.env.PG_DATABASE && process.env.PG_USER && process.env.PG_PASSWORD &&
     console.error("Error loading config.json:", error);
   }
 }
+
+fs
+  .readdirSync(__dirname)
+  .filter(file => {
+    return (
+      file.indexOf('.') !== 0 &&
+      file !== basename &&
+      file.slice(-3) === '.js' &&
+      file.indexOf('.test.js') === -1
+    );
+  })
+  .forEach(file => {
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    db[model.name] = model;
+  });
+
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
