@@ -18,15 +18,15 @@ Sistema de gerenciamento de tarefas, cria uma aplicação web que permite aos us
 concluídas. 
 
 ### Funcionalidades
-* Criar conta usuário ![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
-* Tela de boas vindas ![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
-* Cadatro de empresa matriz ![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
-* Gerenciamento da empresa ![Coverage](https://img.shields.io/badge/coverage-70%25-brightgreen)
+* Criar tarefa, editar e excluir ![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
+* Layout ![Coverage](https://img.shields.io/badge/coverage-50%25-brightgreen)
+* Validaçãodo backend ![Coverage](https://img.shields.io/badge/coverage-0%25-brightgreen)
+* Validações frontend ![Coverage](https://img.shields.io/badge/coverage-10%25-brightgreen)
 
 ### Tecnologias
-* **Frontend:** angular
+* **Frontend:** React.js
 * **Backend:** Node.js
-* **Cloud:** localstorage
+* **Cloud:** vercel
 
 ### Instalação
 1. **Clone o repositório:**
