@@ -21,7 +21,14 @@ if (process.env.DATABASE_URL) {
     }
   });
 } else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
+  // Configuração local
+  const config = require(__dirname + '/../config/config.json')[env];
+  if (config && config.database) {
+    sequelize = new Sequelize(config.database, config.username, config.password, config);
+  } else {
+    console.error("Error: config.json or database property not found in local configuration.");
+    process.exit(1);
+  }
 }
 
 fs
