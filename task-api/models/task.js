@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       // Defina associações aqui se necessário
     }
   }
-  
+
   Task.init({
     title: DataTypes.STRING,
     description: DataTypes.TEXT,
@@ -17,6 +17,6 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Task',
     tableName: 'tasks'
   });
-  
+
   return Task;
 };

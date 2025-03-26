@@ -30,7 +30,7 @@ fs.readdirSync(__dirname)
   })
   .forEach(file => {
     const model = require(path.join(__dirname, file));
-    db[model.name] = model(sequelize, Sequelize.DataTypes);
+    db[model.name] = model; // Mudança aqui
   });
 
 // Configurar associações
