@@ -4,10 +4,9 @@ const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
-const db = require('./models');
-const Tasks = db.Tasks;
+const db = {};
 
-// Configuração simplificada usando apenas DATABASE_URL
+// Configuração da conexão
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
   dialectOptions: {
@@ -16,10 +15,10 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
       rejectUnauthorized: false
     }
   },
-  logging: console.log // Ativa logs para debug
+  logging: console.log
 });
 
-// Carregar modelos corretamente
+// Carregar modelos
 fs.readdirSync(__dirname)
   .filter(file => {
     return (
@@ -30,8 +29,8 @@ fs.readdirSync(__dirname)
     );
   })
   .forEach(file => {
-    const model = require(path.join(__dirname, file));
-    db[model.name] = model; // Mudança aqui
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    db[model.name] = model;
   });
 
 // Configurar associações
