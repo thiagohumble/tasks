@@ -1,7 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const { Tasks } = require('./models');
+const db = require('./models');
+const Tasks = db.Tasks;
 
 const app = express();
 const port = 3001;
@@ -26,7 +27,7 @@ app.get('/tasks', async (req, res) => {
     const formattedTasks = tasks.map(task => ({
       ...task.toJSON(),
       createdAt: new Date(task.createdAt).toLocaleString(),
-      updatedAt: new Date(task.updatedAt).toLocaleString() 
+      updatedAt: new Date(task.updatedAt).toLocaleString()
     }));
     res.json(formattedTasks);
   } catch (error) {
@@ -67,4 +68,3 @@ app.patch('/tasks/:id/done', async (req, res) => {
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port} http://127.0.0.1:3001/tasks`);
 });
-
