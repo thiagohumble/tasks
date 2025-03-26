@@ -3,15 +3,32 @@
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
+const process = require('process');
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'production';
-const config = require(__dirname + '/../config/config.js')[env];
 const db = {};
 
 let sequelize;
-if (config.use_env_variable) {
+const env = process.env.NODE_ENV || 'development';
+
+// Carrega a configuração do arquivo config.js
+const config = require(__dirname + '/../config/config.js')[env];
+
+if (process.env.DATABASE_URL) {
+  // Usa DATABASE_URL se estiver disponível (como no Render)
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    }
+  });
+} else if (config.use_env_variable) {
+  // Configuração usando variável de ambiente
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
+  // Configuração padrão do arquivo config
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
