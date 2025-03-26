@@ -14,7 +14,7 @@ function TaskList() {
     }, []);
 
     const fetchTasks = () => {
-        axios.get('http://127.0.0.1:3001/tasks')
+        axios.get('https://task-api-sswf.onrender.com/tasks')
             .then(response => setTasks(response.data))
             .catch(error => console.error(error));
     };
