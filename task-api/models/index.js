@@ -10,9 +10,6 @@ const db = {};
 let sequelize;
 const env = process.env.NODE_ENV || 'development';
 
-// Carrega a configuração do arquivo config.js
-const config = require(__dirname + '/../config/config.js')[env];
-
 if (process.env.DATABASE_URL) {
   // Usa DATABASE_URL se estiver disponível (como no Render)
   sequelize = new Sequelize(process.env.DATABASE_URL, {
@@ -24,11 +21,21 @@ if (process.env.DATABASE_URL) {
       }
     }
   });
-} else if (config.use_env_variable) {
-  // Configuração usando variável de ambiente
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+} else if (process.env.PG_DATABASE && process.env.PG_USER && process.env.PG_PASSWORD && process.env.PG_HOST && process.env.PG_PORT) {
+  // Usa as variáveis PG_* se DATABASE_URL não estiver definido
+  const connectionString = 'postgres://' + process.env.PG_USER + ':' + process.env.PG_PASSWORD + '@' + process.env.PG_HOST + ':' + process.env.PG_PORT + '/' + process.env.PG_DATABASE;
+  sequelize = new Sequelize(connectionString, {
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    }
+  });
 } else {
   // Configuração padrão do arquivo config
+  const config = require(__dirname + '/../config/config.js')[env];
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
