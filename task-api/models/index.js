@@ -3,14 +3,22 @@
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
-const process = require('process');
 const basename = path.basename(__filename);
 const db = {};
 
-// Importa a instância sequelize criada no index.js da raiz
-const sequelize = require('../index').sequelize;
+// Configuração simplificada usando apenas DATABASE_URL
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: 'postgres',
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
+  },
+  logging: console.log // Ativa logs para debug
+});
 
-// Carregar modelos
+// Carregar modelos corretamente
 fs.readdirSync(__dirname)
   .filter(file => {
     return (
@@ -21,8 +29,8 @@ fs.readdirSync(__dirname)
     );
   })
   .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
+    const model = require(path.join(__dirname, file));
+    db[model.name] = model(sequelize, Sequelize.DataTypes);
   });
 
 // Configurar associações
