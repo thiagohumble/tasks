@@ -7,37 +7,8 @@ const process = require('process');
 const basename = path.basename(__filename);
 const db = {};
 
-let sequelize;
-const env = process.env.NODE_ENV || 'development';
-
-if (process.env.DATABASE_URL) {
-  // Usa DATABASE_URL se estiver disponível (como no Render)
-  sequelize = new Sequelize(process.env.DATABASE_URL, {
-    dialect: 'postgres',
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false
-      }
-    }
-  });
-} else if (process.env.PG_DATABASE && process.env.PG_USER && process.env.PG_PASSWORD && process.env.PG_HOST && process.env.PG_PORT) {
-  // Usa as variáveis PG_* se DATABASE_URL não estiver definido
-  const connectionString = 'postgres://' + process.env.PG_USER + ':' + process.env.PG_PASSWORD + '@' + process.env.PG_HOST + ':' + process.env.PG_PORT + '/' + process.env.PG_DATABASE;
-  sequelize = new Sequelize(connectionString, {
-    dialect: 'postgres',
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false
-      }
-    }
-  });
-} else {
-  // Configuração padrão do arquivo config
-  const config = require(__dirname + '/../config/config.js')[env];
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
+// Importa a instância sequelize criada no index.js da raiz
+const sequelize = require('../index').sequelize;
 
 // Carregar modelos
 fs.readdirSync(__dirname)
