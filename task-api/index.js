@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const db = require('./models'); // Importação CORRETA
+const db = require('./models');
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -19,12 +19,21 @@ db.sequelize.authenticate()
     return db.sequelize.sync();
   })
   .then(() => {
+    // task create
+    app.post('/tasks', async (req, res) => {
+      try {
+        const task = await db.Task.create(req.body); 
+        res.json(task);
+      } catch (error) {
+        console.error('Erro ao criar task:', error);
+        res.status(500).json({ error: error.message });
+      }
+    });
 
-    
-    // Rota GET /tasks - CORRIGIDA usando db.Task
+    // list task
     app.get('/tasks', async (req, res) => {
       try {
-        const tasks = await db.Task.findAll(); // Note db.Task
+        const tasks = await db.Task.findAll(); 
         const formattedTasks = tasks.map(task => ({
           ...task.toJSON(),
           createdAt: new Date(task.createdAt).toLocaleString(),
@@ -37,12 +46,35 @@ db.sequelize.authenticate()
       }
     });
 
-    // task create
-    app.post('/tasks', async (req, res) => {
+    // task edit
+    app.put('/tasks/:id', async (req, res) => {
       try {
-        const task = await Task.create(req.body);
-        res.json(task);
+        await db.Task.update(req.body, { where: { id: req.params.id } }); 
+        res.json({ message: 'Tarefa atualizada' });
       } catch (error) {
+        console.error('Erro ao atualizar task:', error);
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    // task delete
+    app.delete('/tasks/:id', async (req, res) => {
+      try {
+        await db.Task.destroy({ where: { id: req.params.id } }); 
+        res.json({ message: 'Tarefa excluída' });
+      } catch (error) {
+        console.error('Erro ao deletar task:', error);
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    // task done
+    app.patch('/tasks/:id/done', async (req, res) => {
+      try {
+        await db.Task.update({ done: true }, { where: { id: req.params.id } }); 
+        res.json({ message: 'Tarefa marcada como concluída' });
+      } catch (error) {
+        console.error('Erro ao marcar task como concluída:', error);
         res.status(500).json({ error: error.message });
       }
     });
