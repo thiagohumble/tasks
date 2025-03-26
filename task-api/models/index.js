@@ -8,11 +8,13 @@ const basename = path.basename(__filename);
 const db = {};
 
 let sequelize;
-if (process.env.PG_DATABASE && process.env.PG_USER && process.env.PG_PASSWORD && process.env.PG_HOST && process.env.PG_PORT) {
-  const connectionString = 'postgres://' + process.env.PG_USER + ':' + process.env.PG_PASSWORD + '@' + process.env.PG_HOST + ':' + process.env.PG_PORT + '/' + process.env.PG_DATABASE;
-  console.log("Connection String:", connectionString);
-  sequelize = new Sequelize(connectionString, {
+
+// Configuração da conexão
+if (process.env.DATABASE_URL) {
+  // Usar DATABASE_URL se estiver disponível (como no Render)
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
+    protocol: 'postgres',
     dialectOptions: {
       ssl: {
         require: true,
@@ -21,23 +23,14 @@ if (process.env.PG_DATABASE && process.env.PG_USER && process.env.PG_PASSWORD &&
     }
   });
 } else {
-  console.error("Error: Required PostgreSQL environment variables are not defined.");
-  try {
-    const env = process.env.NODE_ENV || 'development';
-    const config = require(__dirname + '/../config/config.json')[env];
-    if (config && config.database) {
-      sequelize = new Sequelize(config.database, config.username, config.password, config);
-      console.log("Connection String (config.json):", config.database);
-    } else {
-      console.error("Error: config.json or database property not found in local configuration.");
-    }
-  } catch (error) {
-    console.error("Error loading config.json:", error);
-  }
+  // Configuração local de fallback
+  const env = process.env.NODE_ENV || 'development';
+  const config = require(__dirname + '/../config/config.js')[env];
+  sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
-fs
-  .readdirSync(__dirname)
+// Carregar modelos
+fs.readdirSync(__dirname)
   .filter(file => {
     return (
       file.indexOf('.') !== 0 &&
@@ -51,6 +44,7 @@ fs
     db[model.name] = model;
   });
 
+// Configurar associações
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);

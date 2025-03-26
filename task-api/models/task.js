@@ -1,21 +1,22 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class Tasks extends Model {
+const { Model } = require('sequelize');
 
+module.exports = (sequelize, DataTypes) => {
+  class Task extends Model {
     static associate(models) {
-      // definir deopis associação
+      // definir associações aqui se necessário
     }
   }
-  Tasks.init({
+  
+  Task.init({
     title: DataTypes.STRING,
     description: DataTypes.TEXT,
     done: DataTypes.BOOLEAN
   }, {
     sequelize,
-    modelName: 'Tasks',
+    modelName: 'Task', // Nome no singular
+    tableName: 'tasks' // Nome da tabela no plural (opcional)
   });
-  return Tasks;
+  
+  return Task;
 };
