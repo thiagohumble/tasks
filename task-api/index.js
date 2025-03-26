@@ -19,6 +19,8 @@ db.sequelize.authenticate()
     return db.sequelize.sync();
   })
   .then(() => {
+
+    
     // Rota GET /tasks - CORRIGIDA usando db.Task
     app.get('/tasks', async (req, res) => {
       try {
@@ -35,7 +37,15 @@ db.sequelize.authenticate()
       }
     });
 
-    // ... outras rotas (TODAS devem usar db.Task)
+    // task create
+    app.post('/tasks', async (req, res) => {
+      try {
+        const task = await Task.create(req.body);
+        res.json(task);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
 
     app.listen(port, () => {
       console.log(`Servidor rodando na porta ${port}`);
