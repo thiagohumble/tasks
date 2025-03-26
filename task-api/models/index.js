@@ -8,13 +8,15 @@ const basename = path.basename(__filename);
 const db = {};
 
 let sequelize;
+const env = process.env.NODE_ENV || 'development';
 
-// Configuração da conexão
+// Carrega a configuração do arquivo config.js
+const config = require(__dirname + '/../config/config.js')[env];
+
 if (process.env.DATABASE_URL) {
-  // Usar DATABASE_URL se estiver disponível (como no Render)
+  // Usa DATABASE_URL se estiver disponível (como no Render)
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
-    protocol: 'postgres',
     dialectOptions: {
       ssl: {
         require: true,
@@ -22,10 +24,11 @@ if (process.env.DATABASE_URL) {
       }
     }
   });
+} else if (config.use_env_variable) {
+  // Configuração usando variável de ambiente
+  sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
-  // Configuração local de fallback
-  const env = process.env.NODE_ENV || 'development';
-  const config = require(__dirname + '/../config/config.js')[env];
+  // Configuração padrão do arquivo config
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
