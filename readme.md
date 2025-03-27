@@ -4,7 +4,8 @@
 ![Coverage](https://img.shields.io/badge/coverage-70%25-brightgreen)
 
 ### Badges
-![image](https://github.com/user-attachments/assets/a458cbde-fb59-4dd9-ba47-d65a277ad66f)
+![image](https://github.com/user-attachments/assets/41c26dd5-1b66-44aa-81e9-5f918df351bd)
+
 
 
 ### Índice
@@ -19,7 +20,7 @@ concluídas.
 
 ### Funcionalidades
 * Criar tarefa, editar e excluir ![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
-* Layout ![Coverage](https://img.shields.io/badge/coverage-50%25-brightgreen)
+* Layout ![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen)
 * Validaçãodo backend ![Coverage](https://img.shields.io/badge/coverage-0%25-brightgreen)
 * Validações frontend ![Coverage](https://img.shields.io/badge/coverage-10%25-brightgreen)
 
