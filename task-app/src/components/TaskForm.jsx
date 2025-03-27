@@ -8,7 +8,7 @@ function TaskForm({ onTaskCreated }) { // Adicionado prop onTaskCreated
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        axios.post('http://127.0.0.1:3001/tasks', { title, description, done })
+        axios.post('https://task-api-sswf.onrender.com/tasks', { title, description, done })
             .then(response => {
                 setDone(false);
                 setTitle('');
