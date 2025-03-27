@@ -27,7 +27,7 @@ function TaskList() {
     };
 
     const handleSave = (id) => {
-        axios.put(`http://127.0.0.1:3001/tasks/${id}`, {
+        axios.put(`https://task-api-sswf.onrender.com/tasks/${id}`, {
             title: editedTitle,
             description: editedDescription,
             done: editedDone
@@ -40,13 +40,13 @@ function TaskList() {
     };
 
     const handleDelete = (id) => {
-        axios.delete(`http://127.0.0.1:3001/tasks/${id}`)
+        axios.delete(`https://task-api-sswf.onrender.com/tasks/${id}`)
             .then(() => fetchTasks())
             .catch(error => console.error(error));
     };
 
     const handleDone = (id) => {
-        axios.patch(`http://127.0.0.1:3001/tasks/${id}/done`)
+        axios.patch(`https://task-api-sswf.onrender.com/tasks/${id}/done`)
             .then(() => fetchTasks())
             .catch(error => console.error(error));
     };
