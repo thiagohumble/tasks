@@ -40,10 +40,10 @@ db.sequelize.authenticate()
           updatedAt: new Date(task.updatedAt).toLocaleString()
         }));
         res.json(formattedTasks);
-        res.json({ message: 'Tarefa atualizada' });
       } catch (error) {
         console.error('Erro ao buscar tasks:', error);
         res.status(500).json({ error: error.message });
+        res.json({ message: 'Tarefa atualizada' });
       }
     });
 
