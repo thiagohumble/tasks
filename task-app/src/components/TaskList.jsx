@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TaskForm from './TaskForm';
+import Logo from '../assets/Logo.jsx';
 
 function TaskList() {
     const [tasks, setTasks] = useState([]);
@@ -9,7 +10,8 @@ function TaskList() {
     const [editedDescription, setEditedDescription] = useState('');
     const [editedDone, setEditedDone] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [apiMessage, setApiMessage] = useState('')
+    const [apiMessage, setApiMessage] = useState('');
+    const [isMessageVisible, setIsMessageVisible] = useState(true);
 
 
     useEffect(() => {
@@ -22,8 +24,10 @@ function TaskList() {
             .then(response => {
                 setLoading(false);
                 setTasks(response.data);
+                setIsMessageVisible(true);
                 setTimeout(() => {
-                    setApiMessage('');
+                    setTimeout(() =>{setApiMessage('');},700)
+                    setIsMessageVisible(false);
                 }, 8000);
             })
             .catch(error => {
@@ -49,7 +53,7 @@ function TaskList() {
             .then(response => {
                 setEditingTaskId(null);
                 fetchTasks();
-                setApiMessage(response.data.message + ` - Tarefa: ${id}` || 'Tarefa salva com sucesso.');
+                setApiMessage(response.data.message + ` - ID: ${id}`  || 'Tarefa salva com sucesso.');
             })
             .catch(error => {
                 console.error(error);
@@ -59,34 +63,42 @@ function TaskList() {
 
     const handleDelete = (id) => {
         axios.delete(`https://task-api-sswf.onrender.com/tasks/${id}`)
-            .then(() => fetchTasks())
             .then(response => {
                 setEditingTaskId(null);
                 fetchTasks();
-                setApiMessage(response.data.message || 'delete')
+                setApiMessage(response.data.message + ` - ID: ${id}` || 'Deletado')
             })
-            .catch(error => console.error(error));
-            setApiMessage(error.response?.data?.error || 'Erro ao Excluir.');
+            .catch(error => {
+                console.error(error);
+                setApiMessage(error.response?.data?.error || 'Erro ao Excluir.');
+            });
     };
 
     const handleDone = (id) => {
         axios.patch(`https://task-api-sswf.onrender.com/tasks/${id}/done`)
-            .then(() => fetchTasks())
+            .then(response => {
+                setEditingTaskId(null);
+                fetchTasks();
+                setApiMessage(response.data.message + ` - ID: ${id}` || 'Tarefa Concluida')
+            })
             .catch(error => console.error(error));
     };
 
     return (
         <div className="min-h-screen bg-gray-900 text-white p-4">
             <div className="w-full mx-auto px-4">
-                <h1 className="text-4xl font-bold mb-8 text-sky-500 text-center">Task List</h1>
-                
+                <h1 className="text-4xl font-bold mb-8 text-sky-500 text-center">
+                    <div className="flex justify-center mb-8">
+                        <Logo size={68} withText={true}  sizeText={'text-6xl'}/>
+                    </div>
+                </h1>
                 <div className="my-12">
                     <TaskForm onTaskCreated={fetchTasks} />
                 </div>
 
 
                 {apiMessage && (
-                    <div className="my-5 bg-gray-200 p-4 rounded-md text-black">
+                    <div className={`my-5 bg-gray-200 p-4 rounded-md transition duration-700 text-black ${isMessageVisible ? 'opacity-100' : 'opacity-0'}`}>
                         {apiMessage}
                     </div>
                 )}
