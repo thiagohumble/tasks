@@ -9,9 +9,36 @@ module.exports = (sequelize, DataTypes) => {
   }
   
   Task.init({
-    title: DataTypes.STRING,
-    description: DataTypes.TEXT,
-    done: DataTypes.BOOLEAN
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          msg: 'O título é obrigatório'
+        },
+        len: {
+          args: [1, 255],
+          msg: 'O título deve ter entre 1 e 255 caracteres'
+        }
+      }
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          msg: 'A descrição é obrigatória'
+        }
+      }
+    },
+    done: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'Task',
@@ -20,3 +47,5 @@ module.exports = (sequelize, DataTypes) => {
   
   return Task;
 };
+
+
