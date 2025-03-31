@@ -10,12 +10,15 @@ function TaskForm({ onTaskCreated }) {
     const [isMessageVisible, setIsMessageVisible] = useState(true);
     const [titleError, setTitleError] = useState('');
     const [descriptionError, setDescriptionError] = useState('');
+    const [wasSubmited, setWasSubmited] = useState(false)
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        setWasSubmited(true);
 
         let isValid = true;
         if (!title.trim()) {
+            setWasSubmited(false);
             setTitleError('Título é Obrigatório');
             isValid = false;
         } else {
@@ -23,6 +26,7 @@ function TaskForm({ onTaskCreated }) {
         }
 
         if (!description.trim()) {
+            setWasSubmited(false);
             setDescriptionError('Descrição é obrigatória');
             isValid = false;
         } else {
@@ -32,6 +36,7 @@ function TaskForm({ onTaskCreated }) {
         if (isValid) {
             axios.post('https://task-api-sswf.onrender.com/tasks', { title, description, done })
             .then(response => {
+                setWasSubmited(false);
                 setDone(false);
                 setTitle('');
                 setDescription('');
@@ -64,10 +69,21 @@ function TaskForm({ onTaskCreated }) {
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-white">Descrição</label>
-                    <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Descrição" className="mt-1 p-2 w-full bg-gray-800 border border-gray-700 rounded text-white" required/>
+                    <textarea value={description} 
+                        onChange={(e) => setDescription(e.target.value)} 
+                        placeholder="Descrição" 
+                        className="mt-1 p-2 w-full bg-gray-800 border border-gray-700 rounded text-white" 
+                        required
+                    />
                     {descriptionError && <p className="text-red-500 text-xs italic">{descriptionError}</p>}
                 </div>
-                <button type="submit" className="bg-sky-600 cursor-pointer hover:bg-sky-700 text-white font-bold py-2 px-4 rounded">Criar tarefa</button>
+                <button 
+                    type="submit" 
+                    disabled={wasSubmited}
+                    className={` ${wasSubmited ? 'disabled:cursor-no-drop' : 'cursor-pointer'} bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded`
+                }>
+                    Criar tarefa
+                </button>
             </form>
 
             {apiMessage && (

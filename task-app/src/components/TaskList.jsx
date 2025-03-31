@@ -12,9 +12,14 @@ function TaskList() {
     const [loading, setLoading] = useState(true);
     const [apiMessage, setApiMessage] = useState('');
     const [isMessageVisible, setIsMessageVisible] = useState(true);
-
+    const [statusLoading, setStatusLoading] = useState('Carregando...');
+    
 
     useEffect(() => {
+        setTimeout(()=>{
+            setStatusLoading('Servidor está com inatividade, que pode atrasar as solicitações de até 50seg. Por favor aguarde!');
+        },10000)
+
         fetchTasks();
     }, []);
 
@@ -58,7 +63,7 @@ function TaskList() {
             .catch(error => {
                 console.error(error);
                 setApiMessage(error.response?.data?.error || 'Erro ao salvar tarefa.');
-            });
+            }); 
     };
 
     const handleDelete = (id) => {
@@ -107,8 +112,9 @@ function TaskList() {
 {/*Desktop*/}
                 <div className="hidden md:block w-full overflow-x-auto rounded-lg shadow-lg">
                     {loading ? (
-                        <p className="animate-bounce"
-                        >Carregando...</p>
+                        <p className="animate-bounce">
+                            {statusLoading}
+                        </p>
                         ) : (
                             <table className="w-full">
                                 <thead className="bg-gray-950">
@@ -209,7 +215,7 @@ function TaskList() {
 {/*Mobile*/}
                 {
                     loading ? (
-                        <p className="md:hidden animate-bounce">Carregando...</p>
+                        <p className="md:hidden animate-bounce">{statusLoading}</p>
                         ) : (
                         <div className="md:hidden space-y-4">
                             {tasks.map((task) => (
