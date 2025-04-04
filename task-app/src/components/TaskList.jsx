@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TaskForm from './TaskForm';
+import LoginForm from './LoginForm.jsx';
 import Logo from '../assets/Logo.jsx';
+
 
 function TaskList() {
     const [tasks, setTasks] = useState([]);
@@ -13,6 +15,7 @@ function TaskList() {
     const [apiMessage, setApiMessage] = useState('');
     const [isMessageVisible, setIsMessageVisible] = useState(true);
     const [statusLoading, setStatusLoading] = useState('Carregando...');
+    const [token, setToken] = useState(localStorage.getItem('token') || null)
     
 
     useEffect(() => {
@@ -23,9 +26,14 @@ function TaskList() {
         fetchTasks();
     }, []);
 
+    const handleLogin = (newToken) => {
+        setToken(newToken);
+        localStorage.setItem('token' , newToken);
+    }
+
     const fetchTasks = () => {
             setLoading(true);
-            axios.get('https://task-api-sswf.onrender.com/tasks')
+            axios.get('http://127.0.0.1:3001/tasks', { headers: { Authorization: `Bearer ${token}`} })
             .then(response => {
                 setLoading(false);
                 setTasks(response.data);
@@ -50,11 +58,11 @@ function TaskList() {
     };
 
     const handleSave = (id) => {
-        axios.put(`https://task-api-sswf.onrender.com/tasks/${id}`, {
+        axios.put(`http://127.0.0.1:3001/tasks/${id}`, {
             title: editedTitle,
             description: editedDescription,
             done: editedDone
-        })
+        }, { headers: { Authorization: `Bearer ${token}`} })
             .then(response => {
                 setEditingTaskId(null);
                 fetchTasks();
@@ -67,7 +75,7 @@ function TaskList() {
     };
 
     const handleDelete = (id) => {
-        axios.delete(`https://task-api-sswf.onrender.com/tasks/${id}`)
+        axios.delete(`http://127.0.0.1:3001/tasks/${id}`, { headers: { Authorization: `Bearer ${token}`} })
             .then(response => {
                 setEditingTaskId(null);
                 fetchTasks();
@@ -80,7 +88,7 @@ function TaskList() {
     };
 
     const handleDone = (id) => {
-        axios.patch(`https://task-api-sswf.onrender.com/tasks/${id}/done`)
+        axios.patch(`http://127.0.0.1:3001/tasks/${id}/done`, null, { headers: { Authorization: `Bearer ${token}`} })
             .then(response => {
                 setEditingTaskId(null);
                 fetchTasks();
@@ -88,6 +96,16 @@ function TaskList() {
             })
             .catch(error => console.error(error));
     };
+
+    const taskForm = () => {
+        if(token) {
+            return (
+                <div className="my-12">
+                    <TaskForm onTaskCreated={fetchTasks} />
+                </div>
+            )
+        }
+    }
 
     return (
         <div className="min-h-screen bg-gray-900 text-white p-4">
@@ -97,20 +115,18 @@ function TaskList() {
                         <Logo size={68} withText={true}  sizeText={'text-6xl'}/>
                     </div>
                 </h1>
-                <div className="my-12">
-                    <TaskForm onTaskCreated={fetchTasks} />
-                </div>
 
+                {!token ? <LoginForm onLogin={handleLogin} /> : taskForm()}
 
-                {apiMessage && (
-                    <div className={`my-5 bg-gray-200 p-4 rounded-md transition duration-700 text-black ${isMessageVisible ? 'opacity-100' : 'opacity-0'}`}>
-                        {apiMessage}
-                    </div>
-                )}
 
 
 {/*Desktop*/}
                 <div className="hidden md:block w-full overflow-x-auto rounded-lg shadow-lg">
+                    {apiMessage && (
+                        <div className={`my-5 bg-gray-200 p-4 rounded-md transition duration-700 text-black ${isMessageVisible ? 'opacity-100' : 'opacity-0'}`}>
+                            {apiMessage}
+                        </div>
+                    )}
                     {loading ? (
                         <p className="animate-bounce">
                             {statusLoading}
