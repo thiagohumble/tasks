@@ -4,21 +4,27 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Task extends Model {
     static associate(models) {
-      // Defina associações aqui se necessário
+      Task.belongsTo(models.User, { foreignKey: 'userId' });
     }
   }
-  
+
   Task.init({
     title: DataTypes.STRING,
     description: DataTypes.TEXT,
-    done: DataTypes.BOOLEAN
+    done: DataTypes.BOOLEAN,
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id',
+      },
+    },
   }, {
     sequelize,
     modelName: 'Task',
-    tableName: 'tasks'
+    tableName: 'tasks',
   });
-  
+
   return Task;
 };
-
-

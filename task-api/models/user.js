@@ -2,8 +2,13 @@
 const { Model } = require('sequelize');
 const bcrypt = require('bcryptjs');
 
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
+    static associate(models) {
+      User.hasMany(models.Task, { foreignKey: 'userId' });
+    }
+    
     validPassword(password) {
       return bcrypt.compareSync(password, this.password);
     }
@@ -32,3 +37,4 @@ module.exports = (sequelize, DataTypes) => {
 
   return User;
 };
+

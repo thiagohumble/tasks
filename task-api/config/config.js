@@ -23,7 +23,7 @@ if (isProduction) {
   config = {
     username: process.env.DB_USER || 'postgres', // Use variáveis de ambiente ou defaults
     password: process.env.DB_PASSWORD || 'postgres',
-    database: process.env.DB_NAME || 'Tasks',
+    database: process.env.DB_NAME || 'tasks',
     host: process.env.DB_HOST || '127.0.0.1',
     dialect: 'postgres',
     port: process.env.DB_PORT || 5432, // Adicione a porta 5432

@@ -1,3 +1,5 @@
+require('dotenv').config({ path: './.env' });
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -11,7 +13,7 @@ const Users = db.User;
 
 const app = express();
 const port = process.env.PORT || 3001;
-const secretKey = 'yourSecretKey';
+const { generateToken, verifyToken, JWT_SECRET } = require('./config/utils/auth');
 
 // Middlewares
 app.use(cors());
@@ -21,21 +23,20 @@ app.use(bodyParser.json());
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
+  
+  if (!token) {
+    return res.sendStatus(401);
+  }
 
-  console.log('Token recebido:', token); // Adicione este log
-  console.log('Chave secreta:', secretKey); // Adicione este log
+  const decoded = verifyToken(token);
+  
+  if (!decoded) {
+    console.log('Token inválido');
+    return res.sendStatus(403);
+  }
 
-  if (!token) return res.sendStatus(401);
-
-  jwt.verify(token, secretKey, (err, user) => {
-    if (err) {
-      console.error('Erro ao verificar token:', err);
-      return res.sendStatus(403);
-    }
-    console.log('Usuário verificado:', user); // Adicione este log
-    req.user = user;
-    next();
-  });
+  req.user = { id: decoded.id }; // Corrigido para usar req.user
+  next();
 };
 
 //rota para autenticação
@@ -56,17 +57,21 @@ app.post('/login', async (req, res) => {
     if (!user) {
       return res.status(401).json({ message: 'Email ou senha incorretos' });
     }
-    console.log('Senha fornecida:', req.body.password);
-    console.log('Senha armazenada:', user.password);
-    if (!user.validPassword(req.body.password)) {
+
+    const isValidPassword = await user.validPassword(req.body.password);
+    if (!isValidPassword) {
       return res.status(401).json({ message: 'Email ou senha incorretos' });
     }
-    const token = jwt.sign({ id: user.id }, secretKey, { expiresIn: '1h' });
+
+    // Use a função generateToken importada
+    const token = generateToken({ id: user.id, email: user.email });
     res.json({ token });
+    
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 
 // Verificar conexão com o banco ANTES das rotas
@@ -81,10 +86,12 @@ db.sequelize.authenticate()
     // task create
     app.post('/tasks', authenticateToken, async (req, res) => {
       try {
-        const task = await db.Task.create(req.body); 
+        const task = await db.Task.create({
+          ...req.body,
+          userId: req.user.id // Usando req.user.id
+        });
         res.json(task);
       } catch (error) {
-        console.error('Erro ao criar task:', error);
         res.status(500).json({ error: error.message });
       }
     });
@@ -92,19 +99,16 @@ db.sequelize.authenticate()
     // list task
     app.get('/tasks', authenticateToken, async (req, res) => {
       try {
-        const tasks = await db.Task.findAll(); 
-        const formattedTasks = tasks.map(task => ({
-          ...task.toJSON(),
-          createdAt: new Date(task.createdAt).toLocaleString(),
-          updatedAt: new Date(task.updatedAt).toLocaleString()
-        }));
-        res.json(formattedTasks);
+        const tasks = await db.Task.findAll({ 
+          where: { userId: req.user.id } // Filtrando pelo usuário
+        });
+        res.json(tasks);
       } catch (error) {
         console.error('Erro ao buscar tasks:', error);
         res.status(500).json({ error: error.message });
-        res.json({ message: 'Tarefa atualizada' });
       }
     });
+
 
     // task edit
     app.put('/tasks/:id', authenticateToken, async (req, res) => {
