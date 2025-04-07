@@ -3,7 +3,7 @@ import axios from 'axios';
 import TaskForm from './TaskForm';
 import LoginForm from './LoginForm.jsx';
 import Logo from '../assets/Logo.jsx';
-
+import RegisterForm from './RegisterForm';
 
 function TaskList() {
     const [tasks, setTasks] = useState([]);
@@ -16,6 +16,7 @@ function TaskList() {
     const [isMessageVisible, setIsMessageVisible] = useState(true);
     const [statusLoading, setStatusLoading] = useState('Carregando...');
     const [token, setToken] = useState(localStorage.getItem('token') || null)
+    const [showRegister, setShowRegister] = useState(false);
     
 
     useEffect(() => {
@@ -31,24 +32,39 @@ function TaskList() {
         localStorage.setItem('token' , newToken);
     }
 
-    const fetchTasks = () => {
-            setLoading(true);
-            axios.get('http://127.0.0.1:3001/tasks', { headers: { Authorization: `Bearer ${token}`} })
-            .then(response => {
-                setLoading(false);
-                setTasks(response.data);
-                setIsMessageVisible(true);
-                setTimeout(() => {
-                    setTimeout(() =>{setApiMessage('');},700)
-                    setIsMessageVisible(false);
-                }, 8000);
-            })
-            .catch(error => {
-                console.error(error);
-                setLoading(false);
-                setApiMessage(error.response?.data?.error || "Erro ao buscar tasks" );
-            });
+    const handleRegister = () => {
+        setShowRegister(false);
     };
+
+    const fetchTasks = () => {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      axios.get('http://127.0.0.1:3001/tasks', { 
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        setTasks(response.data);
+      })
+      .catch(error => {
+        if (error.response?.status === 401) {
+          // Token inválido/expirado - faz logout
+          localStorage.removeItem('token');
+          setToken(null);
+        }
+        console.error('Erro ao buscar tasks:', error);
+      })
+      .finally(() => setLoading(false));
+    };
+
 
     const handleEdit = (task) => {
         setEditingTaskId(task.id);
@@ -116,24 +132,35 @@ function TaskList() {
                     </div>
                 </h1>
 
-                {!token ? <LoginForm onLogin={handleLogin} /> : taskForm()}
+                {!token ? (
+                    <div>
+                        {showRegister ? (
+                            <RegisterForm onRegister={handleRegister} />
+                        ) : (
+                            <LoginForm onLogin={handleLogin} />
+                        )}
+                        <button onClick={() => setShowRegister(!showRegister)} className="mt-4 cursor-pointer text-sky-500 hover:text-sky-400">
+                            {showRegister ? 'Já tem uma conta? Faça login' : 'Não tem uma conta? Registre-se'}
+                        </button>
+                    </div>
+                ) : taskForm()}
 
 
+                {apiMessage && (
+                    <div className={`${!token ? 'hidden' : 'block'} my-5 bg-gray-200 p-4 rounded-md transition duration-700 text-black ${isMessageVisible ? 'opacity-100' : 'opacity-0'}`}>
+                        {apiMessage}
+                    </div>
+                )}
 
 {/*Desktop*/}
                 <div className="hidden md:block w-full overflow-x-auto rounded-lg shadow-lg">
-                    {apiMessage && (
-                        <div className={`my-5 bg-gray-200 p-4 rounded-md transition duration-700 text-black ${isMessageVisible ? 'opacity-100' : 'opacity-0'}`}>
-                            {apiMessage}
-                        </div>
-                    )}
                     {loading ? (
                         <p className="animate-bounce">
                             {statusLoading}
                         </p>
                         ) : (
                             <table className="w-full">
-                                <thead className="bg-gray-950">
+                                <thead className={`bg-gray-950 ${!token ? 'invisible' : 'visible:'}`}>
                                     <tr>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">ID</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Título</th>
@@ -231,10 +258,13 @@ function TaskList() {
 {/*Mobile*/}
                 {
                     loading ? (
+
                         <p className="md:hidden animate-bounce">{statusLoading}</p>
                         ) : (
+
                         <div className="md:hidden space-y-4">
                             {tasks.map((task) => (
+
                                 <div key={task.id} className="bg-gray-800 rounded-lg shadow p-4">
                                     <div className="flex justify-between items-start">
                                         <div>
