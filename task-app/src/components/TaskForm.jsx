@@ -34,7 +34,12 @@ function TaskForm({ onTaskCreated }) {
         }
 
         if (isValid) {
-            axios.post('https://task-api-sswf.onrender.com/tasks', { title, description, done })
+                console.log(localStorage.getItem('token'))
+            axios.post('http://127.0.0.1:3001/tasks', { title, description, done }, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            })
             .then(response => {
                 setWasSubmited(false);
                 setDone(false);

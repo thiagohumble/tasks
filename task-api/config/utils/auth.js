@@ -8,17 +8,22 @@ const generateToken = (user) => {
   return jwt.sign(
     { id: user.id, email: user.email },
     JWT_SECRET,
-    { expiresIn: '1h' } // Tempo de expiração
+    { expiresIn: '24h' }
   );
 };
+
 
 const verifyToken = (token) => {
   try {
     return jwt.verify(token, JWT_SECRET);
   } catch (error) {
-    console.error('Erro ao verificar token:', error);
-    return null;
+    console.error('Erro ao verificar token:', error.message);
+    if (error.name === 'TokenExpiredError') {
+      console.log('Token expirado em:', error.expiredAt);
+    }
+    throw error; // Propaga o erro para ser tratado no middleware
   }
 };
 
 module.exports = { generateToken, verifyToken, JWT_SECRET };
+

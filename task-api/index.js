@@ -15,29 +15,33 @@ const app = express();
 const port = process.env.PORT || 3001;
 const { generateToken, verifyToken, JWT_SECRET } = require('./config/utils/auth');
 
-// Middlewares
+// Middlewares de autenticação
 app.use(cors());
 app.use(bodyParser.json());
 
-// de autenticação
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   
   if (!token) {
-    return res.sendStatus(401);
+    return res.status(401).json({ error: 'Token não fornecido' });
   }
 
-  const decoded = verifyToken(token);
-  
-  if (!decoded) {
-    console.log('Token inválido');
-    return res.sendStatus(403);
+  try {
+    const decoded = verifyToken(token);
+    req.user = { id: decoded.id }; // Use req.user em vez de req.userId
+    next();
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ 
+        error: 'Token expirado',
+        expiredAt: error.expiredAt
+      });
+    }
+    return res.status(403).json({ error: 'Token inválido' });
   }
-
-  req.user = { id: decoded.id }; // Corrigido para usar req.user
-  next();
 };
+
 
 //rota para autenticação
 //registrar

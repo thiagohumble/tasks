@@ -4,6 +4,7 @@ import TaskForm from './TaskForm';
 import LoginForm from './LoginForm.jsx';
 import Logo from '../assets/Logo.jsx';
 import RegisterForm from './RegisterForm';
+import { jwtDecode } from "jwt-decode";
 
 function TaskList() {
     const [tasks, setTasks] = useState([]);
@@ -25,6 +26,33 @@ function TaskList() {
         },10000)
 
         fetchTasks();
+
+        const checkTokenExpiration = () => {
+          const token = localStorage.getItem('token');
+          if (token) {
+            try {
+              const decoded = jwtDecode(token); // Você precisará instalar jwt-decode
+              if (decoded.exp * 1000 < Date.now()) {
+                // Token expirado - remove do localStorage
+                localStorage.removeItem('token');
+                setToken(null);
+              }
+            } catch (error) {
+              console.error('Erro ao decodificar token:', error);
+              localStorage.removeItem('token');
+              setToken(null);
+            }
+          }
+        };
+
+        // Verifica ao carregar a página
+        checkTokenExpiration();
+
+        // Configura um intervalo para verificar periodicamente (opcional)
+        const interval = setInterval(checkTokenExpiration, 60000); // Verifica a cada minuto
+
+        return () => clearInterval(interval); // Limpa o intervalo ao desmontar
+
     }, []);
 
     const handleLogin = (newToken) => {
@@ -36,6 +64,7 @@ function TaskList() {
         setShowRegister(false);
     };
 
+//listar tarefas
     const fetchTasks = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
@@ -113,11 +142,15 @@ function TaskList() {
             .catch(error => console.error(error));
     };
 
+    const handleTaskCreated = (newTask) => {
+        fetchTasks();
+    };
+
     const taskForm = () => {
         if(token) {
             return (
                 <div className="my-12">
-                    <TaskForm onTaskCreated={fetchTasks} />
+                    <TaskForm onTaskCreated={handleTaskCreated} />
                 </div>
             )
         }
