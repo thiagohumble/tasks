@@ -15,6 +15,7 @@ function TaskForm({ onTaskCreated }) {
     const handleSubmit = (event) => {
         event.preventDefault();
         setWasSubmited(true);
+        setIsMessageVisible(true);
 
         let isValid = true;
         if (!title.trim()) {
@@ -34,7 +35,6 @@ function TaskForm({ onTaskCreated }) {
         }
 
         if (isValid) {
-                console.log(localStorage.getItem('token'))
             axios.post('http://127.0.0.1:3001/tasks', { title, description, done }, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`

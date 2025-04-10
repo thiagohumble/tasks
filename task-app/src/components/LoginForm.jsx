@@ -13,6 +13,7 @@ function LoginForm({ onLogin }) {
       
       if (response.data && response.data.token) {
         onLogin(response.data.token);
+        window.location.reload();
       } else {
         setErrorMessage('Resposta inesperada do servidor');
       }
