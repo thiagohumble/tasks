@@ -7,14 +7,16 @@ module.exports = {
       allowNull: false,
       references: {
         model: 'users',
-        key: 'id',
+        key: 'id'
       },
       onUpdate: 'CASCADE',
-      onDelete: 'CASCADE',
+      onDelete: 'CASCADE'
     });
+    
+    await queryInterface.addIndex('tasks', ['userId']);
   },
 
   down: async (queryInterface, Sequelize) => {
     await queryInterface.removeColumn('tasks', 'userId');
-  },
+  }
 };
