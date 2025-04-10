@@ -96,6 +96,7 @@ db.sequelize.authenticate()
         });
         res.json(task);
       } catch (error) {
+        console.error('Erro ao criar tarefa:', error);
         res.status(500).json({ error: error.message });
       }
     });
