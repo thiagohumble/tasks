@@ -6,19 +6,27 @@ const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
 const db = {};
 
-// Configuração da conexão - SIMPLIFICADA
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: 'postgres',
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false
+// Configuração explícita para MySQL (não use DATABASE_URL)
+const sequelize = new Sequelize(
+  process.env.DB_NAME,     // Nome do banco
+  process.env.DB_USER,     // Usuário
+  process.env.DB_PASSWORD, // Senha
+  {
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT || 3306,
+    dialect: 'mysql',
+    dialectModule: require('mysql2'), // Importante para MySQL
+    logging: console.log,
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
     }
-  },
-  logging: console.log // Ativa logs para debug
-});
+  }
+);
 
-// Carregar modelos CORRETAMENTE
+// Carregar modelos
 fs.readdirSync(__dirname)
   .filter(file => {
     return (
