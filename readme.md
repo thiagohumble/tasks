@@ -1,10 +1,11 @@
 #  Meu gerenciamento de tarefas
 ## Uma Aplicação Completa do Zero. Backend (Node.js + Express + Banco de Dados) + Frontend (react vite tailwinds)
 
-![Coverage](https://img.shields.io/badge/coverage-70%25-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-80%25-brightgreen)
 
 ### Badges
-![image](https://github.com/user-attachments/assets/41c26dd5-1b66-44aa-81e9-5f918df351bd)
+![image](https://github.com/user-attachments/assets/495a4e54-0b03-4af5-a9f8-2defd893b66d)
+
 
 
 
